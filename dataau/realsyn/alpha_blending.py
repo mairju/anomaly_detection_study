@@ -34,15 +34,15 @@ class AlphaBlending:
         valid_bottom_right_x = min(top_left_x + patch_width, dest_width)
         valid_bottom_right_y = min(top_left_y + patch_height, dest_height)
 
-        cropped_source = self.cropped_source[:valid_bottom_right_y - valid_top_left_y, :valid_bottom_right_x - valid_top_left_x]
-        cropped_mask = self.cropped_mask[:valid_bottom_right_y - valid_top_left_y, :valid_bottom_right_x - valid_top_left_x]
+        cropped_source_cut = self.cropped_source[:valid_bottom_right_y - valid_top_left_y, :valid_bottom_right_x - valid_top_left_x]
+        cropped_mask_cut = self.cropped_mask[:valid_bottom_right_y - valid_top_left_y, :valid_bottom_right_x - valid_top_left_x]
 
-        feathered_mask = cv2.GaussianBlur(cropped_mask.astype(np.float32), (self.feather_radius, self.feather_radius), 0)
+        feathered_mask = cv2.GaussianBlur(cropped_mask_cut.astype(np.float32), (self.feather_radius, self.feather_radius), 0)
         feathered_mask = feathered_mask[..., None]  
 
         for c in range(3):  
             result[valid_top_left_y:valid_bottom_right_y, valid_top_left_x:valid_bottom_right_x, c] = (
-                cropped_source[:, :, c] * feathered_mask[:, :, 0] +
+                cropped_source_cut[:, :, c] * feathered_mask[:, :, 0] +
                 result[valid_top_left_y:valid_bottom_right_y, valid_top_left_x:valid_bottom_right_x, c] * (1 - feathered_mask[:, :, 0])
             )
         
